@@ -125,7 +125,7 @@ pub struct CfProperties {
     /// Directs the request to an alternate origin server by overriding the DNS lookup. The value of
     /// `resolve_override` specifies an alternate hostname which will be used when determining the
     /// origin IP address, instead of using the hostname specified in the URL. The Host header of
-    /// the request will still match what is in the URL. Thus, `resolve_override` allows a request  
+    /// the request will still match what is in the URL. Thus, `resolve_override` allows a request
     /// to be sent to a different server than the URL / Host header specifies. However,
     /// `resolve_override` will only take effect if both the URL host and the host specified by
     /// `resolve_override` are within your zone. If either specifies a host from a different zone /
@@ -308,7 +308,9 @@ impl From<PolishConfig> for &str {
 #[wasm_bindgen]
 #[derive(Default, Clone, Copy)]
 pub enum RequestRedirect {
-    Error,
+    // wasm-bindgen bug:
+    // https://github.com/rustwasm/wasm-bindgen/pull/3678
+    ErrorTMP,
     #[default]
     Follow,
     Manual,
@@ -317,7 +319,7 @@ pub enum RequestRedirect {
 impl From<RequestRedirect> for &str {
     fn from(redirect: RequestRedirect) -> Self {
         match redirect {
-            RequestRedirect::Error => "error",
+            RequestRedirect::ErrorTMP => "error",
             RequestRedirect::Follow => "follow",
             RequestRedirect::Manual => "manual",
         }
@@ -327,7 +329,7 @@ impl From<RequestRedirect> for &str {
 impl From<RequestRedirect> for web_sys::RequestRedirect {
     fn from(redir: RequestRedirect) -> Self {
         match redir {
-            RequestRedirect::Error => web_sys::RequestRedirect::Error,
+            RequestRedirect::ErrorTMP => web_sys::RequestRedirect::Error,
             RequestRedirect::Follow => web_sys::RequestRedirect::Follow,
             RequestRedirect::Manual => web_sys::RequestRedirect::Manual,
         }
